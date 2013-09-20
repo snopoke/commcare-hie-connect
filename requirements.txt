@@ -1,0 +1,4 @@
+Flask==0.10.1
+
+# SSLV3 compatible requests
+-e git://github.com/joequery/requests-sslv3.git#egg=requests
