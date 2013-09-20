@@ -15,3 +15,6 @@ See [Message specifications for the ICT4H demo](https://jembiprojects.jira.com/w
   * forward_to_hie - '1' to forward case data to OpenHIE
 * Set up data forwarding of cases to this service
   * https://hostname:port/forward/
+
+See [HIE demo app](https://www.commcarehq.org/a/hie-demo/apps/view/56d4b60c85cb767f690cb9a76019186d/?edit=true) on
+ CommCare HQ.
