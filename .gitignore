@@ -1,1 +1,3 @@
 .idea
+*.pyc
+HIE_SETTINGS.py

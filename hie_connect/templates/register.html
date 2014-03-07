@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<ClinicalDocument xmlns="urn:hl7-org:v3" xmlns:cda="urn:hl7-org:v3" xmlns:voc="urn:hl7-org:v3/voc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pcc="urn:ihe:pcc:hl7v3" xmlns:lab="urn:oid:1.3.6.1.4.1.19376.1.3.2" xmlns:sdtc="urn:hl7-org:sdtc" xsi:schemaLocation="urn:hl7-org:v3 CDA.xsd">
+<typeId root="2.16.840.1.113883.1.3" extension="POCD_HD000040"/>
+<templateId root="2.16.840.1.113883.10" extension="IMPL_CDAR2_LEVEL1"/>
+<id root="{{ uniqueId }}"/>
+<code code="51855-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"/>
+<title>SA National Pregnancy Register - Patient Note</title>
+<effectiveTime value="{{ createdTime }}"/>
+<confidentialityCode code="N" displayName="Normal" codeSystem="2.16.840.1.113883.5.25" codeSystemName="Confidentiality"/>
+<languageCode code="en-UK"/>
+<recordTarget>
+  <patientRole>
+    <id extension="{{ pidCX }}" root="526ef9c3-6f18-420a-bc53-9b733920bc67"/>
+    <addr/>
+    <telecom value="tel:{{ cellNumber }}"/>
+    <patient>
+      <name>
+        <given>{{ givenName }}</given>
+        <family>{{ familyName }}</family>
+      </name>
+      <administrativeGenderCode code="F" codeSystem="2.16.840.1.113883.5.1"/>
+      <birthTime value="{{ birthDate }}"/>
+      <languageCommunication>
+        <languageCode code="{{ languageCode }}"/>
+        <preferenceInd value="true"/>
+      </languageCommunication>
+    </patient>
+  </patientRole>
+</recordTarget>
+<author>
+  <time value="{{ authoredTime }}"/>
+  <assignedAuthor>
+    <id extension="{{ hcwCode }}" root="833f2856-b9e1-4f54-8694-c74c4283755f" assigningAuthorityName="HCW Code"/>
+    <addr/>
+    <telecom value="tel:{{ hcwCellNumber }}"/>
+    <assignedPerson>
+      <name>
+        <given>{{ hcwGivenName }}</given>
+        <family>{{ hcwFamilyName }}</family>
+      </name>
+    </assignedPerson>
+    <representedOrganization>
+      <id extension="{{ facilityId }}" root="ab8c9bd1-26e9-47bf-8bbe-3524fccb9f2c" assigningAuthorityName="Facility Code"/>
+      <name>{{ facilityName }}</name>
+    </representedOrganization>
+  </assignedAuthor>
+</author>
+<custodian>
+  <assignedCustodian>
+    <representedCustodianOrganization>
+      <id root="a5881e6c-b42e-4559-a1fd-d1dc52379658"/>
+      <name>SA National Department of Health</name>
+    </representedCustodianOrganization>
+  </assignedCustodian>
+</custodian>
+<documentationOf>
+  <serviceEvent classCode="PCPR">
+    <effectiveTime value="{{ encounterDateTime }}"/>
+  </serviceEvent>
+</documentationOf>
+<component>
+  <structuredBody>
+    <component>
+      <section>
+        <code code="57060-6" displayName="Estimated date of delivery Narrative" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"/>
+        <text>
+          <table>
+            <thead>
+              <tr>
+                <td>Pregnancy status</td>
+                <td>Note Date</td>
+                <td>Delivery Date (Estimated)</td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Pregnancy confirmed</td>
+                <td>2014-02-17</td>
+                <td>2014-10-17</td>
+              </tr>
+            </tbody>
+          </table>
+        </text>
+        <entry>
+          <observation classCode="OBS" moodCode="EVN">
+            <code code="11449-6" displayName="Pregnancy status" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"/>
+            <text/>
+            <statusCode code="completed"/>
+            <effectiveTime value="{{ effectiveTime }}"/>
+            {% if status == 'confirmed' %}
+            <value xsi:type="CE" code="77386006" displayName="Pregnancy confirmed" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED CT"/>
+            {% elif status == 'suspected' %}
+            <value xsi:type="CE" code="102874004" displayName="Unconfirmed pregnancy" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED CT"/>
+            {% elif staus == 'not_pregnant' %}
+            <value xsi:type="CE" code="60001007" displayName="Not pregnant" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED CT"/>
+            {% elif status == 'delivered' %}
+            <value xsi:type="CE" code="289256000" displayName="Mother delivered" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED CT"/>
+            {% endif %}
+            {% if status != 'not_pregnant' %}
+            <entryRelationship typeCode="SPRT" inversionInd="true">
+              <observation classCode="OBS" moodCode="EVN">
+                {% if date_type == 'edd' %}
+                <code code="11778-8" displayName="Delivery date Estimated" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"/>
+                {% elif date_type == 'lmp' %}
+                <code code="8665-2" displayName="Last menstrual period start date" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"/>
+                {% elif date_type == 'dob' %}
+                <code code="21112-8" displayName="Birth date" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"/>
+                {% endif %}
+                <text/>
+                <statusCode code="completed"/>
+                <value xsi:type="TS" value="{{ date }}"/>
+              </observation>
+            </entryRelationship>
+            {% endif %}
+          </observation>
+        </entry>
+      </section>
+    </component>
+  </structuredBody>
+</component>
+</ClinicalDocument>
