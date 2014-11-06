@@ -2,4 +2,4 @@ Flask==0.10.1
 Flask-SQLAlchemy==2.0
 Flask-Migrate
 psycopg2
-requests
+requests==2.4.3
