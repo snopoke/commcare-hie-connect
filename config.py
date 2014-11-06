@@ -6,7 +6,7 @@ class Config(object):
     TESTING = False
     CSRF_ENABLED = True
     SECRET_KEY = 'dev-key'
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', '')
+    SQLALCHEMY_DATABASE_URI = 'postgresql://demo:demo@localhost:5432/hie'
     COMMCARE_API_ROOT='https://www.commcarehq.org',
     COMMCARE_API_USER='demo'
     COMMCARE_API_PASSWORD='demo'
@@ -20,6 +20,7 @@ class Config(object):
 
 class ProductionConfig(Config):
     DEBUG = False
+    SQLALCHEMY_DATABASE_URI = os.environ.get('OPENSHIFT_POSTGRESQL_DB_URL', '')
     COMMCARE_API_USER=os.environ.get('COMMCARE_API_USER', '')
     COMMCARE_API_PASSWORD=os.environ.get('COMMCARE_API_PASSWORD', '')
     COMMCAREHQ_PROJECT=os.environ.get('COMMCAREHQ_PROJECT', '')
