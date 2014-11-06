@@ -52,11 +52,20 @@ def index():
 
 @app.route('/records.json')
 def records():
+    user_id = request.args.get('user', None)
+    case_id = request.args.get('case', None)
+
+    query = Record.query.order_by(Record.date.desc())
+    if user_id:
+        query = query.filter(Record.user_id == user_id)
+    if case_id:
+        query = query.filter(Record.case_id == case_id)
+
     page = int(request.args.get('page', 0))
     limit = int(request.args.get('limit', 5))
     start = limit*page
     end = start+limit
-    rs = [r.to_dict() for r in Record.query.order_by(Record.date.desc())[start:end]]
+    rs = [r.to_dict() for r in query[start:end]]
     return json.dumps({
         'total': Record.query.count(),
         'page': page,
@@ -74,7 +83,10 @@ def forward_data():
         record = Record()
         record.case = request.data
         try:
-            case, msg = parse_case(request.data)
+            root = ET.fromstring(request.data)
+            record.case_id = root.attrib.get(const.ATTR_CASE_ID)
+            record.user_id = root.attrib.get(const.ATTR_USER_ID)
+            case, msg = parse_case(root)
         except:
             return save_error(record)
 
@@ -101,9 +113,8 @@ def forward_data():
         return redirect(url_for('index'))
 
 
-def parse_case(data):
+def parse_case(root):
     try:
-        root = ET.fromstring(data)
         forward = get_case_property(root, const.FORWARD_TO_HIE)
         if forward != '1':
             return None, 'Ignoring case - not flagged for forwarding'
@@ -126,7 +137,7 @@ def parse_case(data):
                 id_type=get_case_property(root, const.ID_TYPE),
             )
 
-            user_id = root.attrib[const.ATTR_USER_ID]
+            user_id = root.attrib.get(const.ATTR_USER_ID)
             user = get_user(user_id)
             case_data = dict(
                 uniqueId=generate_oid(),

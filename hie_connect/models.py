@@ -10,6 +10,8 @@ class Record(db.Model):
     __tablename__ = 'records'
     id = Column(Integer, primary_key=True)
     date = Column(DateTime)
+    case_id = Column(String(64))
+    user_id = Column(String(64))
     case = Column(Text)
     mhd = Column(Text)
     cda = Column(Text)

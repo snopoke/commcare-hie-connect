@@ -11,6 +11,7 @@ class P(str):
 
 
 ATTR_USER_ID = 'user_id'
+ATTR_CASE_ID = 'case_id'
 ATTR_LAST_MODIFIED = 'date_modified'
 
 DOMAIN = P('domain').p
