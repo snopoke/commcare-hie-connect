@@ -13,7 +13,7 @@ import requests
 from flask import Flask, request, redirect, url_for, Response, render_template
 from requests.auth import HTTPBasicAuth
 
-from hie_connect.commcare_hq_client import CommCareHqClient
+from hie_connect.commcare_hq_client import CommCareHqClient, AUTH_MODE_DIGEST
 import hie_connect.const as const
 
 
@@ -205,6 +205,7 @@ def hq_client():
         hq_client._hq_api_client = CommCareHqClient(
             app.config['COMMCARE_API_ROOT'],
             None,
+            auth=AUTH_MODE_DIGEST
         ).authenticated(app.config['COMMCARE_API_USER'], app.config['COMMCARE_API_PASSWORD'])
     return hq_client._hq_api_client
 
