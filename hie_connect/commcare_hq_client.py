@@ -5,6 +5,11 @@ import requests
 import logging
 
 # This import pattern supports Python 2 and 3
+from requests.auth import HTTPDigestAuth
+
+AUTH_MODE_SESSION = 'session'
+AUTH_MODE_DIGEST = 'digest'
+
 try:
     from urllib.request import urlopen
     from urllib.parse import urlparse, urlencode, parse_qs
@@ -43,11 +48,12 @@ class CommCareHqClient(object):
     A connection to CommCareHQ for a particular version, project, and user.
     """
 
-    def __init__(self, url, project, version=LATEST_KNOWN_VERSION, session=None):
+    def __init__(self, url, project, version=LATEST_KNOWN_VERSION, session=None, auth=None):
         self.version = version
         self.url = url
         self.project = project
         self.__session = session
+        self.__auth = auth
 
     @property
     def session(self):
@@ -58,30 +64,37 @@ class CommCareHqClient(object):
     def api_url(self, project):
         return '%s/a/%s/api/v%s' % (self.url, project or self.project, self.version)
 
-    def authenticated(self, username=None, password=None):
+    def authenticated(self, username=None, password=None, mode=AUTH_MODE_SESSION):
         """
         Returns a freshly authenticated CommCareHqClient with a new session.
         This is safe to call many times and each of the resulting clients
         remain independent, so you can log in with zero, one, or many users.
         """
 
-        login_url = '%s/accounts/login/' % self.url
         session = requests.Session()
-        
-        # Pick up things like CSRF cookies and form fields by doing a GET first
-        response = session.get(login_url)
-        if response.status_code != 200:
-            raise Exception('Failed to connect to authentication page (%s): %s' % (response.status_code, response.text))
+        auth = None
+        if mode == AUTH_MODE_SESSION:
+            login_url = '%s/accounts/login/' % self.url
 
-        response = session.post(login_url, 
-                                headers = {'Referer': login_url },
-                                data = {'username': username, 
-                                        'password': password, 
-                                        'csrfmiddlewaretoken': response.cookies['csrftoken']})
-        if response.status_code != 200:
-            raise Exception('Authentication failed (%s): %s' % (response.status_code, response.text))
-        
-        return CommCareHqClient(url=self.url, project=self.project, version=self.version, session=session)
+            # Pick up things like CSRF cookies and form fields by doing a GET first
+            response = session.get(login_url)
+            if response.status_code != 200:
+                raise Exception('Failed to connect to authentication page (%s): %s' % (response.status_code, response.text))
+
+            response = session.post(login_url,
+                                    headers = {'Referer': login_url },
+                                    data = {'username': username,
+                                            'password': password,
+                                            'csrfmiddlewaretoken': response.cookies['csrftoken']})
+            if response.status_code != 200:
+                raise Exception('Authentication failed (%s): %s' % (response.status_code, response.text))
+
+        elif mode == 'digest':
+            auth = HTTPDigestAuth(username, password)
+        else:
+            raise Exception('Unknown auth mode: %s' % mode)
+
+        return CommCareHqClient(url=self.url, project=self.project, version=self.version, session=session, auth=auth)
 
     def get(self, resource, id=None, params=None, project=None):
         """
@@ -94,7 +107,7 @@ class CommCareHqClient(object):
         resource_url = '%s/%s/' % (self.api_url(project), resource)
         if id:
             resource_url = '%s%s/' % (resource_url, id)
-        response = self.session.get(resource_url, params=params)
+        response = self.session.get(resource_url, params=params, auth=self.__auth)
 
         if response.status_code != 200:
             raise Exception('GET %s failed (%s): %s' % (resource_url, response.status_code, response.text))
@@ -116,14 +129,17 @@ class CommCareHqClient(object):
                              batch['meta']['offset'], 
                              int(batch['meta']['offset'])+int(batch['meta']['limit']),
                              int(batch['meta']['total_count']))
-                
-                for obj in batch['objects']:
-                    yield obj
-                    
-                if batch['meta']['next']:
-                    params = parse_qs(urlparse(batch['meta']['next']).query)
-                else:
+
+                if not batch['objects']:
                     more_to_fetch = False
+                else:
+                    for obj in batch['objects']:
+                        yield obj
+
+                    if batch['meta']['next']:
+                        params = parse_qs(urlparse(batch['meta']['next']).query)
+                    else:
+                        more_to_fetch = False
                 
         return RepeatableIterator(iterate_resource)
 

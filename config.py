@@ -7,7 +7,7 @@ class Config(object):
     CSRF_ENABLED = True
     SECRET_KEY = 'dev-key'
     SQLALCHEMY_DATABASE_URI = 'postgresql://demo:demo@localhost:5432/hie'
-    COMMCARE_API_ROOT='https://www.commcarehq.org',
+    COMMCARE_API_ROOT='https://www.commcarehq.org'
     COMMCARE_API_USER='demo'
     COMMCARE_API_PASSWORD='demo'
     COMMCAREHQ_PROJECT='demo'
