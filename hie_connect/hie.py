@@ -2,10 +2,13 @@ from __future__ import unicode_literals, print_function, absolute_import, divisi
 import hashlib
 import logging
 import json
+import traceback
 import uuid
+import os
 from datetime import datetime
 from StringIO import StringIO
 from xml.etree import ElementTree as ET
+from flask.ext.sqlalchemy import SQLAlchemy
 
 import requests
 from flask import Flask, request, redirect, url_for, Response, render_template
@@ -20,25 +23,27 @@ logger = logging.getLogger('hie')
 logger.setLevel(logging.DEBUG)
 
 app = Flask(__name__)
-app.config.update(dict(
-    DEBUG=True,
-    SECRET_KEY='development key',
-    COMMCARE_API_ROOT='https://www.commcarehq.org',
-    COMMCARE_API_USER='demo',
-    COMMCARE_API_PASSWORD='demo',
-    COMMCAREHQ_PROJECT='demo',
-    HIE_USERNAME='test',
-    HIE_PASSWORD='test',
-    HIE_URL_BASE='https://npr-him.jembi.org:5000',
-    HIE_REGISTER_URL='/ws/rest/v1/registration/validate',
-))
+app.config.from_object(os.environ['APP_SETTINGS'])
 
-try:
-    import HIE_SETTINGS
+from hie_connect.models import Record, db
+db.init_app(app)
 
-    app.config.from_object(HIE_SETTINGS)
-except ImportError:
-    pass
+
+def save_error(record):
+    f = StringIO()
+    traceback.print_exc(file=f)
+    record.error = f.getvalue()
+    return save_record(record)
+
+
+def save_record(record):
+    try:
+        db.session.add(record)
+        db.session.commit()
+    except:
+        logger.exception("Error saving record to DB")
+
+    return Response(status=200)
 
 
 @app.route('/')
@@ -52,13 +57,29 @@ def forward_data():
         if not request.data:
             app.logger.warn('No data in post')
 
-        case = parse_case(request.data)
+        record = Record()
+        record.case = request.data
+        try:
+            case = parse_case(request.data)
+        except:
+            return save_error(record)
+
         if case:
-            mhd, cda = get_mhd_cda(case)
+            try:
+                mhd, cda = get_mhd_cda(case)
+            except:
+                return save_error(record)
 
-        print(post(app.config['HIE_REGISTER_URL'], mhd, cda))
+            record.mhd = mhd
+            record.cda = cda
 
-        return Response(status=200)
+            try:
+                code, text = post(app.config['HIE_REGISTER_URL'], mhd, cda)
+                record.response_code = code
+                record.response_text = text
+                return save_record(record)
+            except:
+                return save_error(record)
     else:
         return redirect(url_for('index'))
 

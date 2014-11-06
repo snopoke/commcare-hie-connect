@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+import os
+os.environ['APP_SETTINGS'] = 'local_config.DevelopmentConfig'
+
 import hie
 import unittest
 from hie_connect.commcare_hq_client import MockCommCareHqClient
@@ -11,7 +14,6 @@ class HieForwarderTestCase(unittest.TestCase):
 
     def setUp(self):
         """Before each test, set up a blank database"""
-        hie.app.config['TESTING'] = True
         hie.hq_client._hq_api_client = MockCommCareHqClient({
             'user': [
                 (
