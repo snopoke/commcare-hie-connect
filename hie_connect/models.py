@@ -8,10 +8,10 @@ class Record(db.Model):
     id = Column(Integer, primary_key=True)
     date = Column(DateTime)
     case = Column(Text)
-    mdh = Column(Text)
+    mhd = Column(Text)
     cda = Column(Text)
     response_code = Column(Integer)
-    response_text = Column(String(255))
+    response_text = Column(Text)
     error = Column(Text)
 
     def __init__(self):

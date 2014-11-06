@@ -1,9 +1,62 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title></title>
-</head>
-<body>
-{{ welcome }}
-</body>
+  <head>
+    <title>Wordcount</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <style>
+      .container {
+        max-width: 1000px;
+      }
+    </style>
+  </head>
+  <body>
+        <h1>CommCare -> OpenHIE Connect</h1>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Date</th>
+                    <th>Response Code</th>
+                </tr>
+            </thead>
+            <tbody>
+          {% for record in records %}
+            <tr data-toggle="collapse" data-target="#details{{ record.id }}" class="accordion-toggle {% if record.response_code == 200 %}success{% else %}warning{% endif %}">
+                <td>{{ record.id }}</td>
+                <td>{{ record.date }}</td>
+                <td colspan="5">{{ record.response_code }}</td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <div class="collapse out" id="details{{ record.id }}">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Response Text</th>
+                                    <th>Case</th>
+                                    <th>MHD</th>
+                                    <th>CDA</th>
+                                    <th>Error</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><pre>{{ record.response_text }}</pre></td>
+                                    <td><pre>{{ record.case }}</pre></td>
+                                    <td><pre>{{ record.mhd }}</pre></td>
+                                    <td><pre>{{ record.cda }}</pre></td>
+                                    <td><pre>{{ record.error }}</pre></td>
+                                </tr>
+                            </tbody>
+                            </table>
+                    </div>
+                </td>
+            </tr>
+          {% endfor %}
+            </tbody>
+        </table>
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+  </body>
 </html>

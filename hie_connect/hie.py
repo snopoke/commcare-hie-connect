@@ -8,7 +8,6 @@ import os
 from datetime import datetime
 from StringIO import StringIO
 from xml.etree import ElementTree as ET
-from flask.ext.sqlalchemy import SQLAlchemy
 
 import requests
 from flask import Flask, request, redirect, url_for, Response, render_template
@@ -48,7 +47,7 @@ def save_record(record):
 
 @app.route('/')
 def index():
-    return render_template('index.html', welcome="Welcome to HIE Connect")
+    return render_template('index.html', records=Record.query.order_by(Record.date.desc()).all())
 
 
 @app.route('/forward/', methods=['POST'])
@@ -70,7 +69,7 @@ def forward_data():
             except:
                 return save_error(record)
 
-            record.mhd = mhd
+            record.mhd = json.dumps(mhd, sort_keys=True, indent=4)
             record.cda = cda
 
             try:
@@ -190,7 +189,7 @@ def get_user(user_id):
 
 
 def get_mhd_cda(context):
-    cda = render_template('register.html', **context)
+    cda = render_template('cda.html', **context)
     mhd = const.MHD_BASE.copy()
     entry = mhd['documentEntry']
     entry['patientId'] = context['pidCX']
