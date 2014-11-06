@@ -28,3 +28,22 @@ See [Message specifications for the ICT4H demo](https://jembiprojects.jira.com/w
 
 See [HIE demo app](https://www.commcarehq.org/exchange/be1cb5a17c9ae6c398f31e38bc82e197/info/) on
  CommCare HQ.
+ 
+ 
+## Running locally
+Create a 'local_config.py' file:
+
+    from config import DevelopmentConfig as DevConfig
+
+
+    class DevelopmentConfig(DevConfig):
+        SQLALCHEMY_DATABASE_URI = "postgresql://user:password@localhost:5432/hie"
+        SECRET_KEY = "123"
+        COMMCARE_API_USER = "me@me.com"
+        COMMCARE_API_PASSWORD = "my_hq_password"
+        COMMCAREHQ_PROJECT = "my_hq_project"
+        
+Run from the command line:
+
+    > export APP_SETTINGS="local_config.DevelopmentConfig"
+    > python run.py
