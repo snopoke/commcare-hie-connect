@@ -1,7 +1,10 @@
 from datetime import datetime
 from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, Integer, String, DateTime, Text
+from hie_connect.util import to_dict
+
 db = SQLAlchemy()
+
 
 class Record(db.Model):
     __tablename__ = 'records'
@@ -19,3 +22,8 @@ class Record(db.Model):
 
     def __repr__(self):
         return '<Record %r>' % (self.id)
+    
+    def to_dict(self):
+        r_dict = to_dict(self)
+        r_dict['date'] = self.date.isoformat()
+        return r_dict

@@ -47,7 +47,22 @@ def save_record(record):
 
 @app.route('/')
 def index():
-    return render_template('index.html', records=Record.query.order_by(Record.date.desc()).all())
+    return app.send_static_file('index.html')
+
+
+@app.route('/records.json')
+def records():
+    page = int(request.args.get('page', 0))
+    limit = int(request.args.get('limit', 5))
+    start = limit*page
+    end = start+limit
+    rs = [r.to_dict() for r in Record.query.order_by(Record.date.desc())[start:end]]
+    return json.dumps({
+        'total': Record.query.count(),
+        'page': page,
+        'limit': limit,
+        'records': rs,
+    })
 
 
 @app.route('/forward/', methods=['POST'])

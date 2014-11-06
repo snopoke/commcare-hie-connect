@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="hieApp">
   <head>
     <title>Wordcount</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,8 +10,14 @@
       }
     </style>
   </head>
-  <body>
+  <body ng-controller="HieController">
         <h1>CommCare -> OpenHIE Connect</h1>
+        <nav>
+          <ul class="pager">
+            <li><a href="#" ng-click="previousPage()">Previous</a></li>
+            <li><a href="#" ng-click="nextPage()">Next</a></li>
+          </ul>
+        </nav>
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -21,13 +27,13 @@
                 </tr>
             </thead>
             <tbody>
-          {% for record in records %}
-            <tr data-toggle="collapse" data-target="#details{{ record.id }}" class="accordion-toggle {% if record.response_code == 200 %}success{% else %}warning{% endif %}">
+            <tr ng-repeat-start="record in records.records" data-toggle="collapse" data-target="#details{{ record.id }}"
+                class="accordion-toggle" ng-class="{success: response_code === 200, warning: response_code !== 200}">
                 <td>{{ record.id }}</td>
                 <td>{{ record.date }}</td>
                 <td>{{ record.response_code }}</td>
             </tr>
-            <tr>
+            <tr ng-repeat-end>
                 <td colspan="3">
                     <div class="collapse out" id="details{{ record.id }}">
                         <table class="table table-bordered">
@@ -49,14 +55,15 @@
                                     <td><pre>{{ record.error }}</pre></td>
                                 </tr>
                             </tbody>
-                            </table>
+                        </table>
                     </div>
                 </td>
             </tr>
-          {% endfor %}
             </tbody>
         </table>
     <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular.min.js"></script>
+    <script src="static/hie.js"></script>
   </body>
 </html>
