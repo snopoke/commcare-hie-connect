@@ -2,5 +2,4 @@ Flask==0.10.1
 Flask-SQLAlchemy==2.0
 Flask-Migrate
 psycopg2
-# SSLV3 compatible requests
--e git://github.com/joequery/requests-sslv3.git#egg=requests
+requests
