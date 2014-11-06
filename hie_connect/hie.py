@@ -201,7 +201,7 @@ def get_mhd_cda(context):
 
 
 def hq_client():
-    if not hq_client._hq_api_client:
+    if not hasattr(hq_client, '_hq_api_client'):
         hq_client._hq_api_client = CommCareHqClient(
             app.config['COMMCARE_API_ROOT'],
             None,
