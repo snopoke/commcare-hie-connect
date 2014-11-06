@@ -59,12 +59,12 @@ def forward_data():
         record = Record()
         record.case = request.data
         try:
-            case = parse_case(request.data)
+            case, msg = parse_case(request.data)
         except:
             return save_error(record)
 
         if not case:
-            record.error = "Ignoring case without '{}' property ".format(const.FORWARD_TO_HIE)
+            record.error = msg
             return save_record(record)
         else:
             try:
@@ -91,13 +91,11 @@ def parse_case(data):
         root = ET.fromstring(data)
         forward = get_case_property(root, const.FORWARD_TO_HIE)
         if forward != '1':
-            logger.debug('Ignoring case - not flagged for forwarding')
-            return None
+            return None, 'Ignoring case - not flagged for forwarding'
 
         status = get_case_property(root, const.PREGNANCY_STATUS)
         if not status:
-            logger.info('No pregnancy status')
-            return None
+            return None, 'No pregnancy status'
 
         if status in const.STATUS_LIST:
             opened_on = root.attrib[const.ATTR_LAST_MODIFIED]
@@ -140,15 +138,14 @@ def parse_case(data):
 
             for k, v in case_data.items():
                 if v is None:
-                    logger.error('Field missing from case: %s', k)
-                    return None
+                    return None, 'Field missing from case: %s' % k
 
-            return case_data
+            return case_data, None
         else:
-            logger.info('Ignoring case with status %s' % status)
-    except AttributeError as e:
+            return None, 'Ignoring case with status %s' % status
+    except AttributeError:
         app.logger.exception('Error processing case')
-        return None
+        raise
 
 
 def get_case_property(case_root, xpath):
