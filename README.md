@@ -25,6 +25,12 @@ See [Message specifications for the ICT4H demo](https://jembiprojects.jira.com/w
   * forward_to_hie - '1' to forward case data to OpenHIE
 * Set up data forwarding of cases to this service
   * https://hostname:port/forward/
+* Mobile workers must have:
+  * First name
+  * Last name
+  * At least one phone number
+  * Custom data:
+    * hwc_code - Their unique Health Worker Code
 
 See [HIE demo app](https://www.commcarehq.org/exchange/be1cb5a17c9ae6c398f31e38bc82e197/info/) on
  CommCare HQ.
