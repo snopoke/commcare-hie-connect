@@ -19,7 +19,7 @@ except ImportError:
 
 logger = logging.getLogger(__file__)
 
-LATEST_KNOWN_VERSION='0.4'
+LATEST_KNOWN_VERSION='0.5'
 
 import hie_connect
 

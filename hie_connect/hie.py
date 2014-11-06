@@ -63,7 +63,10 @@ def forward_data():
         except:
             return save_error(record)
 
-        if case:
+        if not case:
+            record.error = "Ignoring case without '{}' property ".format(const.FORWARD_TO_HIE)
+            return save_record(record)
+        else:
             try:
                 mhd, cda = get_mhd_cda(case)
             except:
@@ -204,9 +207,8 @@ def hq_client():
     if not hasattr(hq_client, '_hq_api_client'):
         hq_client._hq_api_client = CommCareHqClient(
             app.config['COMMCARE_API_ROOT'],
-            None,
-            auth=AUTH_MODE_DIGEST
-        ).authenticated(app.config['COMMCARE_API_USER'], app.config['COMMCARE_API_PASSWORD'])
+            None
+        ).authenticated(app.config['COMMCARE_API_USER'], app.config['COMMCARE_API_PASSWORD'], AUTH_MODE_DIGEST)
     return hq_client._hq_api_client
 
 

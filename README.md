@@ -13,7 +13,7 @@ See [Message specifications for the ICT4H demo](https://jembiprojects.jira.com/w
   * given_name
   * family_name
   * dob - date of birth
-  * language_code - preferred language code of the patient
+  * lang_code - preferred language code of the patient
   * facility_id
   * facility_name
   * pregnancy_status - not_pregnant, suspected, confirmed, delivered
