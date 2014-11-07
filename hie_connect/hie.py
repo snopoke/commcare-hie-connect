@@ -86,6 +86,10 @@ def forward_data():
             root = ET.fromstring(request.data)
             record.case_id = root.attrib.get(const.ATTR_CASE_ID)
             record.user_id = root.attrib.get(const.ATTR_USER_ID)
+            record.name = '{} {}'.format(
+                get_case_property(root, const.GIVEN_NAME),
+                get_case_property(root, const.FAMILY_NAME)
+            )
             case, msg = parse_case(root)
         except:
             return save_error(record)

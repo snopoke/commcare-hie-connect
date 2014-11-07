@@ -12,6 +12,7 @@ class Record(db.Model):
     date = Column(DateTime)
     case_id = Column(String(64))
     user_id = Column(String(64))
+    name = Column(String(255))
     case = Column(Text)
     mhd = Column(Text)
     cda = Column(Text)
