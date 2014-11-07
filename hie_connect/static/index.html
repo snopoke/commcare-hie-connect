@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html ng-app="hieApp">
 <head>
-    <title>Wordcount</title>
+    <title>CommCare HIE Connect</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet" media="screen">
     <style>
@@ -11,10 +11,19 @@
     </style>
 </head>
 <body ng-controller="HieController">
-<h1>CommCare -> OpenHIE Connect</h1>
-
+<a href="https://github.com/snopoke/commcare-hie-connect">
+    <img style="position: absolute; top: 0; right: 0; border: 0;"
+         src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub"
+         data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png">
+</a>
+<div class="container">
+<div class="page-header">
+    <h1>CommCare HIE connect</h1>
+    <p class="lead">The middle man between <a href="https://www.commcarehq.org" target="_blank">CommCare HQ</a> and
+        <a href="https://jembiprojects.jira.com/wiki/display/ICT4H14/ICT4H-2014" target="_blank">OpenHIE</a>.</p>
+</div>
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-12">
         <form class="form-inline">
             <div class="form-group">
                 <label for="case" class="col-sm-2 control-label">Case</label>
@@ -48,12 +57,16 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-md-2">
+    <div class="col-md-12">
         <nav>
             <ul class="pager">
-                <li ng-class="{disabled: currentPage === 0}"><a href="#" ng-click="previousPage()">Previous</a></li>
-                <li>{{ start }} to {{ end }} of {{ total }}</li>
-                <li ng-class="{disabled: disableNext}"><a href="#" ng-click="nextPage()">Next</a></li>
+                <li class="previous" ng-class="{disabled: currentPage === 0}"><a href="#" ng-click="previousPage()">Previous</a></li>
+                <li>
+                    <button class="btn btn-default" disabled="disabled" type="button">
+                        Showing <span class="badge">{{ start }}</span> to <span class="badge">{{ end }}</span> of <span class="badge">{{ total }}</span>
+                    </button>
+                </li>
+                <li class="next" ng-class="{disabled: disableNext}"><a href="#" ng-click="nextPage()">Next</a></li>
             </ul>
         </nav>
     </div>
@@ -118,6 +131,7 @@
             </tbody>
         </table>
     </div>
+</div>
 </div>
 <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
 <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
