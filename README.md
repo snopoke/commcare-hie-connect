@@ -1,3 +1,5 @@
+**THIS PROJECT IS UNMAINTAINED**
+
 # CommCare HQ to OpenHIE Data Forwarding service proof of concept
 This project contains a very simple Flask app to receive case data from CommCare HQ
 and forward it to and OpenHIE instance.
